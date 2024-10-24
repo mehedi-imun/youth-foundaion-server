@@ -3,6 +3,11 @@
 ## 🚀 Overview
 
 Welcome to the **Foundation Management System**, a robust web application tailored for managing foundation activities seamlessly. Designed for scalability and efficiency, this system empowers foundations to optimize their operations, manage donations, and communicate effectively with stakeholders.
+## Architecture Diagram
+
+Below is the architecture diagram for the Youth Foundation project:
+
+![Architecture Diagram](assets/architecture-diagram.png)
 
 ## 🌟 Key Features
 
