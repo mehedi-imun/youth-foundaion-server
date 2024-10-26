@@ -4,6 +4,13 @@ import prisma from "../shared/prisma";
 // Function to generate custom ID for users
 const generateCustomId = async () => {
     const lastUser = await prisma.user.findFirst({
+        where: {
+            UserRole: {
+                none: {
+                    role: { in: [Role.ADMIN, Role.SUPER_ADMIN] },
+                },
+            },
+        },
         orderBy: {
             customId: 'desc',
         },
