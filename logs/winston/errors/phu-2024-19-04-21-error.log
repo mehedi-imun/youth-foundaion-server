@@ -1,5 +1,0 @@
-Fri Apr 19 2024 21:29:10 } [PH] error: 
-Invalid `prisma.appointment.findMany()` invocation:
-
-
-Timed out fetching a new connection from the connection pool. More info: http://pris.ly/d/connection-pool (Current connection pool timeout: 10, connection limit: 17)

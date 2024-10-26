@@ -7,11 +7,235 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// Models
+model User {
+  name             String
+  id               String             @id @default(cuid())
+  customId         String             @unique  // Custom ID
+  email            String?            @unique
+  password         String
+  phone            String
+  address          String?
+  image            String?
+  createdAt        DateTime           @default(now())
+  status           AccountStatus      @default(ACTIVE)
+  isDeleted        Boolean            @default(false) // Soft delete
+  donations        Donation[]         @relation("UserDonations")
+  bloodDonor       BloodDonor[]       @relation("UserBloodDonor")
+  finances         Finance[]          @relation("UserFinances")
+  userRoles        UserRole[]         @relation("UserRoles")
+  statusHistory    UserStatusHistory[] @relation("UserStatusHistory")
+  loginHistory     LoginHistory[]     @relation("UserLoginHistory")
+  userActivity     UserActivity[]     @relation("UserActivities")
+  @@index([email]) // Index on email
+  @@index([createdAt]) // Index on createdAt for performance on sorting
+  UserActivity UserActivity[]
+  LoginHistory LoginHistory[]
+  Donation Donation[]
+  BloodDonor BloodDonor[]
+  FoundationRole FoundationRole[]
+  UserRole UserRole[]
+  UserStatusHistory UserStatusHistory[]
+}
+
+model UserStatusHistory {
+  id          Int                @id @default(autoincrement())
+  userId      String             @unique
+  status      AccountStatus
+  reason      String?            // Reason for status change
+  changedAt   DateTime           @default(now()) // Status change date
+  isDeleted   Boolean            @default(false) // Soft delete
+  user        User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([changedAt]) // Index for faster querying
+  User User[] @relation("UserStatusHistory")
+}
+
+model UserRole {
+  id          Int                @id @default(autoincrement())
+  userId      String
+  role        Role
+  createdAt   DateTime           @default(now())
+  isDeleted    Boolean           @default(false) // Soft delete
+  user        User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId, role]) // Composite index for user and role
+  User User[] @relation("UserRoles")
+}
+
+model FoundationRole {
+  id          Int                @id @default(autoincrement())
+  userId      String
+  positionId  Int
+  startDate   DateTime           @default(now())
+  endDate     DateTime?          // Optional end date
+  createdAt   DateTime           @default(now())
+  isDeleted    Boolean           @default(false) // Soft delete
+  user        User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  position    FoundationPosition  @relation(fields: [positionId], references: [id], onDelete: Cascade)
+  @@index([userId, positionId]) // Composite index for user and position
+}
+
+model BloodDonor {
+  id                      Int                @id @default(autoincrement())
+  userId                  String
+  bloodGroup              BloodGroup
+  nextEligibleDonation    DateTime           // Next eligible donation date
+  createdAt               DateTime           @default(now())
+  isDeleted               Boolean            @default(false) // Soft delete
+  user                    User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  BloodDonation           BloodDonation[] 
+  @@index([userId]) // Index for userId
+  User User[] @relation("UserBloodDonor")
+}
+
+model BloodDonation {
+  id                      Int                @id @default(autoincrement())
+  donorId                 Int
+  location                String?            // Optional donation location
+  hospital                String             // Hospital name
+  createdAt               DateTime           @default(now())
+  isDeleted               Boolean            @default(false) // Soft delete
+  donor                   BloodDonor         @relation(fields: [donorId], references: [id], onDelete: Cascade)
+  @@index([donorId]) // Index for donorId
+}
+
+model Donation {
+  id                      Int                @id @default(autoincrement())
+  userId                  String?
+  donationDetailId        Int
+  createdAt               DateTime           @default(now())
+  isDeleted               Boolean            @default(false) // Soft delete
+
+  user                    User?              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  donationDetail          DonationDetail      @relation(fields: [donationDetailId], references: [id], onDelete: Cascade)
+
+  @@index([userId]) // Index for userId
+  @@index([donationDetailId])
+  DonationType DonationType[]
+  Finance Finance[]
+  User User[] @relation("UserDonations")
+}
+
+model DonationDetail {
+  id                Int             @id @default(autoincrement())
+  donationTypeId    Int
+  frequencyId       Int
+  donationMonth     Month?          // Keeping Month as an enum for now
+  amount            Float?          // Optional donation amount
+  quantity          Int?            // Optional quantity
+  description       String?         // Optional description
+  createdAt         DateTime        @default(now())
+  isDeleted         Boolean         @default(false) // Soft delete
+
+  donationType      DonationType    @relation(fields: [donationTypeId], references: [id], onDelete: Cascade)
+  frequency         DonationFrequency @relation(fields: [frequencyId], references: [id], onDelete: Cascade)
+  donations         Donation[]
+
+  @@index([donationTypeId]) // Index for donation type
+  @@index([frequencyId]) // Index for donation frequency
+}
+
+model Finance {
+  id                      Int                @id @default(autoincrement())
+  type                    FinanceType        @default(INCOME)
+  amount                  Float              @default(0)
+  description             String?            // Optional description
+  categoryId              Int
+  donationId              Int?                // Optional donation reference
+  isRecurring             Boolean            @default(false)
+  isDeleted               Boolean            @default(false) // Soft delete
+  createdAt               DateTime           @default(now())
+  updatedAt               DateTime           @updatedAt
+
+  category                FinanceCategory    @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  donation                Donation?          @relation(fields: [donationId], references: [id], onDelete: Cascade)
+
+  @@index([type]) // Index for type
+  @@index([amount]) // Index for amount
+  @@index([categoryId])
+  @@index([donationId])
+  User User[] @relation("UserFinances")
+}
+
+model FinanceCategory {
+  id                      Int                @id @default(autoincrement())
+  name                    String             @unique
+  description             String?            // Optional description
+  isDeleted               Boolean            @default(false) // Soft delete
+
+  finances                Finance[]          // Finance entries in this category
+
+  @@index([name]) // Index for category name
+  FoundationExpense FoundationExpense[]
+}
+
+model FoundationExpense {
+  id                      Int                @id @default(autoincrement())
+  amount                  Float              // Expense amount
+  description             String             // Expense description
+  categoryId              Int
+  isDeleted               Boolean            @default(false) // Soft delete
+  createdAt               DateTime           @default(now())
+  updatedAt               DateTime           @updatedAt
+
+  category                FinanceCategory    @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@index([categoryId]) // Index for categoryId
+}
+
+model LoginHistory {
+  id          Int                @id @default(autoincrement())
+  userId      String
+  loginAt     DateTime           @default(now())
+  ipAddress   String?            // Optional IP address
+  isDeleted   Boolean            @default(false) // Soft delete
+
+  user        User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, loginAt]) // Composite index for userId and login date
+  User User[] @relation("UserLoginHistory")
+}
+
+model UserActivity {
+  id          Int                @id @default(autoincrement())
+  userId      String
+  action      String             // Description of user action
+  timestamp   DateTime           @default(now())
+  isDeleted   Boolean            @default(false) // Soft delete
+  user        User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId, timestamp]) // Composite index for userId and action timestamp
+  User User[] @relation("UserActivities")
+}
+
+// New Models
+model DonationType {
+  id        Int     @id @default(autoincrement())
+  name      String  @unique
+  donations Donation[]
+  donationDetail DonationDetail[]
+  isDeleted Boolean @default(false) // Soft delete
+}
+
+model FoundationPosition {
+  id        Int     @id @default(autoincrement())
+  name      String  @unique
+  roles     FoundationRole[]
+  isDeleted Boolean @default(false) // Soft delete
+}
+
+model DonationFrequency {
+  id        Int     @id @default(autoincrement())
+  name      String  @unique
+  donationDetails DonationDetail[]
+  isDeleted Boolean @default(false) // Soft delete
+}
+
+// Enums
 enum Role {
   ADMIN
   MEMBER
   BLOOD_DONOR
   USER
+  SUPER_ADMIN
 }
 
 enum BloodGroup {
@@ -25,177 +249,28 @@ enum BloodGroup {
   O_NEG
 }
 
-enum DonationType {
-  MONEY
-  CLOTHES
-  FOOD
-  MEDICINE
+enum Month {
+  JANUARY
+  FEBRUARY
+  MARCH
+  APRIL
+  MAY
+  JUNE
+  JULY
+  AUGUST
+  SEPTEMBER
+  OCTOBER
+  NOVEMBER
+  DECEMBER
 }
 
-enum DonationFrequency {
-  ONE_TIME
-  MONTHLY
-  CRISIS_ONLY
-  ISSUE_SPECIFIC
-}
-
-enum FoundationPosition {
-  PRESIDENT
-  SECRETARY
-  TREASURER
-  MANAGER
-  MEMBER
-  VOLUNTEER
+enum AccountStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
 }
 
 enum FinanceType {
   INCOME
   EXPENSE
-}
-
-enum AccountStatus {
-  ACTIVE
-  BLOCKED
-  SUSPENDED
-  HACKED
-  RESIGNED
-  UNDER_REVIEW
-}
-
-model User {
-  id             Int              @id @default(autoincrement())
-  name           String
-  email          String           @unique
-  password       String
-  phone          String?
-  address        String?
-  image          String?
-  createdAt      DateTime         @default(now())
-  deletedAt      DateTime?        // Soft delete field
-  roles          UserRole[]
-  donations      Donation[]
-  BloodDonor     BloodDonor[]
-  foundationRoles FoundationRole[]
-  finances       Finance[]        // Track user-related finances
-
-  // Manage user status with enum and history
-  status         AccountStatus    @default(ACTIVE)
-  statusHistory  UserStatusHistory[] // Track history of user status changes
-
-  Finance Finance[] @relation("UserFinance")
-}
-
-model UserStatusHistory {
-  id             Int              @id @default(autoincrement())
-  user           User             @relation(fields: [userId], references: [id])
-  userId         Int
-  status         AccountStatus    // Status the user was changed to
-  reason         String?          // Reason for status change (e.g., security review, user resigned)
-  changedAt      DateTime         @default(now())  // When the status was changed
-}
-
-model UserRole {
-  id             Int              @id @default(autoincrement())
-  user           User             @relation(fields: [userId], references: [id])
-  userId         Int
-  role           Role
-  createdAt      DateTime         @default(now())
-  deletedAt      DateTime?        // Soft delete field
-}
-
-model FoundationRole {
-  id             Int              @id @default(autoincrement())
-  user           User             @relation(fields: [userId], references: [id])
-  userId         Int
-  position       FoundationPosition
-  startDate      DateTime         @default(now())
-  endDate        DateTime?        
-  deletedAt      DateTime?        // Soft delete field
-  createdAt      DateTime         @default(now())
-
-  notify         Boolean          @default(true) // Whether to send notifications
-  resigned       Boolean          @default(false) // Whether the user has resigned
-}
-
-model BloodDonor {
-  id             Int              @id @default(autoincrement())
-  user           User             @relation(fields: [userId], references: [id])
-  userId         Int
-  bloodGroup     BloodGroup
-  donationHistory BloodDonation[]
-  nextEligibleDonation DateTime  
-  createdAt      DateTime         @default(now())
-  deletedAt      DateTime?        // Soft delete field
-}
-
-model BloodDonation {
-  id             Int              @id @default(autoincrement())
-  donor          BloodDonor       @relation(fields: [donorId], references: [id])
-  donorId        Int
-  location       String?        
-  hospital       String
-  createdAt      DateTime         @default(now())
-  deletedAt      DateTime?        // Soft delete field
-}
-
-model Donation {
-  id             Int              @id @default(autoincrement())
-  user           User             @relation(fields: [userId], references: [id])
-  userId         Int
-  donationType   DonationType
-  frequency      DonationFrequency
-  donationDetail DonationDetail?  @relation(fields: [donationDetailId], references: [id])
-  donationDetailId Int?
-  createdAt      DateTime         @default(now())
-  deletedAt      DateTime?        // Soft delete field
-  finance        Finance[]        // Link donations to finance records
-}
-
-model DonationDetail {
-  id             Int              @id @default(autoincrement())
-  donationType   DonationType
-  amount         Float?           
-  quantity       Int?             
-  description    String?          
-  createdAt      DateTime         @default(now())
-  deletedAt      DateTime?        // Soft delete field
-  Donation Donation[]
-}
-
-model Finance {
-  id             Int              @id @default(autoincrement())
-  type           FinanceType
-  amount         Float            @default(0)
-  description    String?
-  category       FinanceCategory   @relation(fields: [categoryId], references: [id])
-  categoryId     Int
-  donation       Donation?         @relation(fields: [donationId], references: [id])
-  donationId     Int?
-  isRecurring    Boolean           @default(false)
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
-  deletedAt      DateTime?        // Soft delete field
-
-  users          User[]            @relation("UserFinance")
-
-  User User[]
-}
-
-model FinanceCategory {
-  id             Int              @id @default(autoincrement())
-  name           String           @unique
-  description    String?
-  finances       Finance[]
-  FoundationExpense FoundationExpense[]
-}
-
-model FoundationExpense {
-  id             Int              @id @default(autoincrement())
-  amount         Float
-  description    String
-  category       FinanceCategory   @relation(fields: [categoryId], references: [id])
-  categoryId     Int
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
-  deletedAt      DateTime?        // Soft delete field
 }

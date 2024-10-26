@@ -1,7 +1,0 @@
-Thu Apr 18 2024 18:37:5 } [PH] error: 
-Invalid `prisma.appointment.findMany()` invocation:
-
-
-Can't reach database server at `aws-0-ap-southeast-1.pooler.supabase.com`:`5432`
-
-Please make sure your database server is running at `aws-0-ap-southeast-1.pooler.supabase.com`:`5432`.
