@@ -1,7 +1,7 @@
 import { Role, AccountStatus } from "@prisma/client";
 import prisma from "../src/shared/prisma";
 import * as bcrypt from 'bcrypt';
-import generateCustomId  from '../src/helpers/generateCustomId';
+import {generateAdminId}  from '../src/helpers/generateCustomId';
 
 const seedSuperAdmin = async () => {
     const hashedPassword = await bcrypt.hash("superadmin", 12);
@@ -12,14 +12,14 @@ const seedSuperAdmin = async () => {
             // Check if a Super Admin already exists
             const isExistSuperAdmin = await tx.user.findFirst({
                 where: {
-                    userRoles: {
+                    UserRole: {
                         some: {
-                            role: Role.SUPER_ADMIN
-                        }
-                    }
-                }
+                            role: Role.SUPER_ADMIN,
+                        },
+                    },
+                },
             });
-
+console.log(isExistSuperAdmin);
             if (isExistSuperAdmin) {
                 console.log("Super Admin already exists!");
                 return null; // Return null if user already exists
@@ -27,10 +27,10 @@ const seedSuperAdmin = async () => {
 
             // Create the Super Admin user
               // Generate custom ID
-              const customId = await generateCustomId();
+              const customId = await generateAdminId();
             const user = await tx.user.create({
                 data: {
-                    customId: customId, // Add a customId property
+                    customId:customId , // Add a customId property
                     name: "Super Admin",
                     email: "super@admin.com",
                     password: hashedPassword,
