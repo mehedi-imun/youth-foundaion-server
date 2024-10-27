@@ -6,6 +6,7 @@ import cookieParser from 'cookie-parser';
 import cron from 'node-cron';
 import { errorlogger } from './shared/logger';
 import config from './config';
+import router from './app/routes';
 
 const app: Application = express();
 
@@ -27,7 +28,7 @@ app.use(express.urlencoded({limit: '50mb'}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// app.use('/api/v1', routes);
+app.use('/api/v1', router);
 
 app.get('/test', async (req: Request, res: Response) => {
   res.status(200).json({

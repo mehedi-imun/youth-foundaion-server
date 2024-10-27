@@ -31,7 +31,7 @@ const seedSuperAdmin = async () => {
           name: 'Super Admin',
           email: 'super@admin.com',
           password: hashedPassword,
-          phone: '01234567890',
+          contactNumber: '01234567890',
           address: '123 Admin St',
           status: AccountStatus.ACTIVE,
         },
@@ -62,7 +62,7 @@ const seedSuperAdmin = async () => {
         },
       });
 
-      return user; // Return the created user
+      return user;
     });
 
     if (superAdminUser) {

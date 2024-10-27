@@ -1,0 +1,20 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "C:\\web-development\\projects\\youth-foundation-server\\logs\\winston\\errors\\.80c2bfc7bfdc6728893046dd1ee048ee5d0a4de2-audit.json",
+    "files": [
+        {
+            "date": 1730049943117,
+            "name": "C:\\web-development\\projects\\youth-foundation-server\\logs\\winston\\errors\\phu-2024-27-10-23-error.log",
+            "hash": "046bdb613d83cdd57b4df199553401bde95f97bfe78ab4faaef488f17fb2ca3f"
+        },
+        {
+            "date": 1730053287783,
+            "name": "C:\\web-development\\projects\\youth-foundation-server\\logs\\winston\\errors\\phu-2024-28-10-00-error.log",
+            "hash": "38a88358b1450f87931be028b5bdaf743e338ecdd8f7f115d1dcdc2a4e6a3ddf"
+        }
+    ],
+    "hashType": "sha256"
+}

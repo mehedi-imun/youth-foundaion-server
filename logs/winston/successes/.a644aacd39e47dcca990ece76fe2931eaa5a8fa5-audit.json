@@ -1,0 +1,20 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "C:\\web-development\\projects\\youth-foundation-server\\logs\\winston\\successes\\.a644aacd39e47dcca990ece76fe2931eaa5a8fa5-audit.json",
+    "files": [
+        {
+            "date": 1730049943115,
+            "name": "C:\\web-development\\projects\\youth-foundation-server\\logs\\winston\\successes\\phu-2024-27-10-23-success.log",
+            "hash": "012835729acb0a06cc80420cbf0faa105800923b291b45199479dea030805308"
+        },
+        {
+            "date": 1730053287781,
+            "name": "C:\\web-development\\projects\\youth-foundation-server\\logs\\winston\\successes\\phu-2024-28-10-00-success.log",
+            "hash": "f6d91fb14cf6a82a1c7bea570217a4766a10dd347547b61e307b525e0c459622"
+        }
+    ],
+    "hashType": "sha256"
+}

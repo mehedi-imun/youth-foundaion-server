@@ -14,7 +14,7 @@ model User {
   customId         String             @unique  // Custom ID
   email            String?            @unique
   password         String
-  phone            String
+  contactNumber            String
   address          String?
   image            String?
   createdAt        DateTime           @default(now())
@@ -63,12 +63,12 @@ model UserRole {
 
 model FoundationRole {
   id          Int                @id @default(autoincrement())
-  userId      String
   positionId  Int
   startDate   DateTime           @default(now())
   endDate     DateTime?          // Optional end date
   createdAt   DateTime           @default(now())
   isDeleted    Boolean           @default(false) // Soft delete
+  userId      String
   user        User               @relation(fields: [userId], references: [id], onDelete: Cascade)
   position    FoundationPosition  @relation(fields: [positionId], references: [id], onDelete: Cascade)
   @@index([userId, positionId]) // Composite index for user and position
@@ -104,10 +104,8 @@ model Donation {
   donationDetailId        Int
   createdAt               DateTime           @default(now())
   isDeleted               Boolean            @default(false) // Soft delete
-
   user                    User?              @relation(fields: [userId], references: [id], onDelete: Cascade)
   donationDetail          DonationDetail      @relation(fields: [donationDetailId], references: [id], onDelete: Cascade)
-
   @@index([userId]) // Index for userId
   @@index([donationDetailId])
   DonationType DonationType[]
@@ -125,11 +123,9 @@ model DonationDetail {
   description       String?         // Optional description
   createdAt         DateTime        @default(now())
   isDeleted         Boolean         @default(false) // Soft delete
-
   donationType      DonationType    @relation(fields: [donationTypeId], references: [id], onDelete: Cascade)
   frequency         DonationFrequency @relation(fields: [frequencyId], references: [id], onDelete: Cascade)
   donations         Donation[]
-
   @@index([donationTypeId]) // Index for donation type
   @@index([frequencyId]) // Index for donation frequency
 }
@@ -145,7 +141,6 @@ model Finance {
   isDeleted               Boolean            @default(false) // Soft delete
   createdAt               DateTime           @default(now())
   updatedAt               DateTime           @updatedAt
-
   category                FinanceCategory    @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   donation                Donation?          @relation(fields: [donationId], references: [id], onDelete: Cascade)
 
