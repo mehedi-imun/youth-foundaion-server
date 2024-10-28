@@ -14,7 +14,7 @@ model User {
   customId         String             @unique  // Custom ID
   email            String?            @unique
   password         String
-  contactNumber            String
+  contactNumber    String @unique
   address          String?
   image            String?
   createdAt        DateTime           @default(now())
@@ -23,7 +23,7 @@ model User {
   donations        Donation[]         @relation("UserDonations")
   bloodDonor       BloodDonor[]       @relation("UserBloodDonor")
   finances         Finance[]          @relation("UserFinances")
-  userRoles        UserRole[]         @relation("UserRoles")
+  roles           UserRole []
   statusHistory    UserStatusHistory[] @relation("UserStatusHistory")
   loginHistory     LoginHistory[]     @relation("UserLoginHistory")
   userActivity     UserActivity[]     @relation("UserActivities")
@@ -34,7 +34,6 @@ model User {
   Donation Donation[]
   BloodDonor BloodDonor[]
   FoundationRole FoundationRole[]
-  UserRole UserRole[]
   UserStatusHistory UserStatusHistory[]
 }
 
@@ -48,17 +47,6 @@ model UserStatusHistory {
   user        User               @relation(fields: [userId], references: [id], onDelete: Cascade)
   @@index([changedAt]) // Index for faster querying
   User User[] @relation("UserStatusHistory")
-}
-
-model UserRole {
-  id          Int                @id @default(autoincrement())
-  userId      String
-  role        Role
-  createdAt   DateTime           @default(now())
-  isDeleted    Boolean           @default(false) // Soft delete
-  user        User               @relation(fields: [userId], references: [id], onDelete: Cascade)
-  @@index([userId, role]) // Composite index for user and role
-  User User[] @relation("UserRoles")
 }
 
 model FoundationRole {
@@ -143,7 +131,6 @@ model Finance {
   updatedAt               DateTime           @updatedAt
   category                FinanceCategory    @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   donation                Donation?          @relation(fields: [donationId], references: [id], onDelete: Cascade)
-
   @@index([type]) // Index for type
   @@index([amount]) // Index for amount
   @@index([categoryId])
@@ -183,9 +170,7 @@ model LoginHistory {
   loginAt     DateTime           @default(now())
   ipAddress   String?            // Optional IP address
   isDeleted   Boolean            @default(false) // Soft delete
-
   user        User               @relation(fields: [userId], references: [id], onDelete: Cascade)
-
   @@index([userId, loginAt]) // Composite index for userId and login date
   User User[] @relation("UserLoginHistory")
 }
@@ -194,10 +179,10 @@ model UserActivity {
   id          Int                @id @default(autoincrement())
   userId      String
   action      String             // Description of user action
-  timestamp   DateTime           @default(now())
+  createdAt   DateTime           @default(now())
   isDeleted   Boolean            @default(false) // Soft delete
   user        User               @relation(fields: [userId], references: [id], onDelete: Cascade)
-  @@index([userId, timestamp]) // Composite index for userId and action timestamp
+  @@index([userId, createdAt]) // Composite index for userId and action timestamp
   User User[] @relation("UserActivities")
 }
 
@@ -225,7 +210,7 @@ model DonationFrequency {
 }
 
 // Enums
-enum Role {
+enum UserRole {
   ADMIN
   MEMBER
   BLOOD_DONOR

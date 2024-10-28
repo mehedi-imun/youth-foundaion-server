@@ -1,19 +1,20 @@
-import { AccountStatus, Role } from '@prisma/client';
+import { AccountStatus, UserRole } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
-import { generateAdminId } from '../src/helpers/generateCustomId';
+import { generateAdminId, generateCustomId } from '../src/helpers/generateCustomId';
 import prisma from '../src/shared/prisma';
 
 const seedSuperAdmin = async () => {
   const hashedPassword = await bcrypt.hash('superadmin', 12);
+  const customId = await generateAdminId();
+  const customId2 = await generateCustomId();
+  console.log('customId:', customId2);
   try {
     // Start a transaction
     const superAdminUser = await prisma.$transaction(async tx => {
       const isExistSuperAdmin = await tx.user.findFirst({
         where: {
-          UserRole: {
-            some: {
-              role: Role.SUPER_ADMIN,
-            },
+          roles: {
+            has: UserRole.SUPER_ADMIN,
           },
         },
       });
@@ -24,7 +25,7 @@ const seedSuperAdmin = async () => {
 
       // Create the Super Admin user
       // Generate custom ID
-      const customId = await generateAdminId();
+      
       const user = await tx.user.create({
         data: {
           customId: customId, // Add a customId property
@@ -33,15 +34,7 @@ const seedSuperAdmin = async () => {
           password: hashedPassword,
           contactNumber: '01234567890',
           address: '123 Admin St',
-          status: AccountStatus.ACTIVE,
-        },
-      });
-
-      // Create associated UserRole
-      await tx.userRole.create({
-        data: {
-          role: Role.SUPER_ADMIN,
-          userId: user.id, // Linking to the created user
+          roles: [UserRole.SUPER_ADMIN], // Add the missing role property
         },
       });
 
@@ -65,9 +58,9 @@ const seedSuperAdmin = async () => {
       return user;
     });
 
-    if (superAdminUser) {
-      console.log('Super Admin created successfully!', superAdminUser);
-    }
+    // if (superAdminUser) {
+    //   console.log('Super Admin created successfully!', superAdminUser);
+    // }
   } catch (err) {
     console.error('Error creating Super Admin:', err);
   } finally {

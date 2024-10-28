@@ -4,8 +4,8 @@ import catchAsync from '../../../shared/catchAsync';
 import sendResponse from '../../../shared/sendResponse';
 import { userService } from './user.sevice';
 
-const createAdmin = catchAsync(async (req: Request, res: Response) => {
-  const result = await userService.createAdmin(req);
+const createUser = catchAsync(async (req: Request, res: Response) => {
+  const result = await userService.createUser(req);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -15,5 +15,5 @@ const createAdmin = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const userController = {
-  createAdmin,
+ createUser,
 };

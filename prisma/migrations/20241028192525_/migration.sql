@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "Role" AS ENUM ('ADMIN', 'MEMBER', 'BLOOD_DONOR', 'USER', 'SUPER_ADMIN');
+CREATE TYPE "UserRole" AS ENUM ('ADMIN', 'MEMBER', 'BLOOD_DONOR', 'USER', 'SUPER_ADMIN');
 
 -- CreateEnum
 CREATE TYPE "BloodGroup" AS ENUM ('A_POS', 'A_NEG', 'B_POS', 'B_NEG', 'AB_POS', 'AB_NEG', 'O_POS', 'O_NEG');
@@ -20,12 +20,13 @@ CREATE TABLE "User" (
     "customId" TEXT NOT NULL,
     "email" TEXT,
     "password" TEXT NOT NULL,
-    "phone" TEXT NOT NULL,
+    "contactNumber" TEXT NOT NULL,
     "address" TEXT,
     "image" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "status" "AccountStatus" NOT NULL DEFAULT 'ACTIVE',
     "isDeleted" BOOLEAN NOT NULL DEFAULT false,
+    "roles" "UserRole"[],
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
@@ -43,25 +44,14 @@ CREATE TABLE "UserStatusHistory" (
 );
 
 -- CreateTable
-CREATE TABLE "UserRole" (
-    "id" SERIAL NOT NULL,
-    "userId" TEXT NOT NULL,
-    "role" "Role" NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "isDeleted" BOOLEAN NOT NULL DEFAULT false,
-
-    CONSTRAINT "UserRole_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
 CREATE TABLE "FoundationRole" (
     "id" SERIAL NOT NULL,
-    "userId" TEXT NOT NULL,
     "positionId" INTEGER NOT NULL,
     "startDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "endDate" TIMESTAMP(3),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "isDeleted" BOOLEAN NOT NULL DEFAULT false,
+    "userId" TEXT NOT NULL,
 
     CONSTRAINT "FoundationRole_pkey" PRIMARY KEY ("id")
 );
@@ -171,7 +161,7 @@ CREATE TABLE "UserActivity" (
     "id" SERIAL NOT NULL,
     "userId" TEXT NOT NULL,
     "action" TEXT NOT NULL,
-    "timestamp" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "isDeleted" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "UserActivity_pkey" PRIMARY KEY ("id")
@@ -202,12 +192,6 @@ CREATE TABLE "DonationFrequency" (
     "isDeleted" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "DonationFrequency_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "_UserRoles" (
-    "A" TEXT NOT NULL,
-    "B" INTEGER NOT NULL
 );
 
 -- CreateTable
@@ -259,6 +243,9 @@ CREATE UNIQUE INDEX "User_customId_key" ON "User"("customId");
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "User_contactNumber_key" ON "User"("contactNumber");
+
+-- CreateIndex
 CREATE INDEX "User_email_idx" ON "User"("email");
 
 -- CreateIndex
@@ -269,9 +256,6 @@ CREATE UNIQUE INDEX "UserStatusHistory_userId_key" ON "UserStatusHistory"("userI
 
 -- CreateIndex
 CREATE INDEX "UserStatusHistory_changedAt_idx" ON "UserStatusHistory"("changedAt");
-
--- CreateIndex
-CREATE INDEX "UserRole_userId_role_idx" ON "UserRole"("userId", "role");
 
 -- CreateIndex
 CREATE INDEX "FoundationRole_userId_positionId_idx" ON "FoundationRole"("userId", "positionId");
@@ -319,7 +303,7 @@ CREATE INDEX "FoundationExpense_categoryId_idx" ON "FoundationExpense"("category
 CREATE INDEX "LoginHistory_userId_loginAt_idx" ON "LoginHistory"("userId", "loginAt");
 
 -- CreateIndex
-CREATE INDEX "UserActivity_userId_timestamp_idx" ON "UserActivity"("userId", "timestamp");
+CREATE INDEX "UserActivity_userId_createdAt_idx" ON "UserActivity"("userId", "createdAt");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "DonationType_name_key" ON "DonationType"("name");
@@ -329,12 +313,6 @@ CREATE UNIQUE INDEX "FoundationPosition_name_key" ON "FoundationPosition"("name"
 
 -- CreateIndex
 CREATE UNIQUE INDEX "DonationFrequency_name_key" ON "DonationFrequency"("name");
-
--- CreateIndex
-CREATE UNIQUE INDEX "_UserRoles_AB_unique" ON "_UserRoles"("A", "B");
-
--- CreateIndex
-CREATE INDEX "_UserRoles_B_index" ON "_UserRoles"("B");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "_UserStatusHistory_AB_unique" ON "_UserStatusHistory"("A", "B");
@@ -382,9 +360,6 @@ CREATE INDEX "_UserLoginHistory_B_index" ON "_UserLoginHistory"("B");
 ALTER TABLE "UserStatusHistory" ADD CONSTRAINT "UserStatusHistory_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "UserRole" ADD CONSTRAINT "UserRole_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "FoundationRole" ADD CONSTRAINT "FoundationRole_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -422,12 +397,6 @@ ALTER TABLE "LoginHistory" ADD CONSTRAINT "LoginHistory_userId_fkey" FOREIGN KEY
 
 -- AddForeignKey
 ALTER TABLE "UserActivity" ADD CONSTRAINT "UserActivity_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "_UserRoles" ADD CONSTRAINT "_UserRoles_A_fkey" FOREIGN KEY ("A") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "_UserRoles" ADD CONSTRAINT "_UserRoles_B_fkey" FOREIGN KEY ("B") REFERENCES "UserRole"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_UserStatusHistory" ADD CONSTRAINT "_UserStatusHistory_A_fkey" FOREIGN KEY ("A") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
