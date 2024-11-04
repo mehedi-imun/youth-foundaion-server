@@ -111,8 +111,26 @@ console.log(roles)
     data: users,
   };
 };
-
+const getUserById = async (id: string): Promise<User | null> => {
+  return prisma.user.findUnique({ where: { id },
+  include: {
+    userActivity: true,
+    donations: true,
+    bloodDonor: true,
+    FoundationRole: true,
+    loginHistory: true,
+    UserStatusHistory: true,
+    UserActivity: true,
+  }, });
+  
+}
+// update user
+const updateAUser = async (id: string, data: any): Promise<User | null> => {
+  return await prisma.user.update({ where: { id }, data });
+};
 export const userService = {
   createUser,
-  getAllUsers
+  getAllUsers,
+  getUserById,
+  updateAUser
 };

@@ -5,7 +5,6 @@ import prisma from '../shared/prisma';
 const generateCustomId = async () => {
     const lastUser = await prisma.user.findFirst({
       where: {
-        
         NOT: {
           roles: {
             hasSome: [UserRole.ADMIN, UserRole.SUPER_ADMIN],

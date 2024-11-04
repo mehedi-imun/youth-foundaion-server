@@ -16,6 +16,14 @@ const createUser = z.object({
   user: userSchema, // Validate user data
 });
 
+const updateUser = z.object({
+  name: z.string().min(1, 'Name is required').optional(), // Ensure name is a non-empty string
+  email: z.string().email('Invalid email address').optional(), // Ensure email is valid
+  contactNumber: z.string().min(10, 'Contact number must be at least 10 characters long').optional(), // Adjust length as needed
+  address: z.string().min(1, 'Address is required').optional(), // Ensure address is a non-empty string
+  roles: z.array(z.enum(Object.values(UserRole) as [UserRole, ...UserRole[]])).optional(),
+});
 export const userValidation = {
    createUser,
+   updateUser
 };

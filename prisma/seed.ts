@@ -6,8 +6,6 @@ import prisma from '../src/shared/prisma';
 const seedSuperAdmin = async () => {
   const hashedPassword = await bcrypt.hash('superadmin', 12);
   const customId = await generateAdminId();
-  const customId2 = await generateCustomId();
-  console.log('customId:', customId2);
   try {
     // Start a transaction
     const superAdminUser = await prisma.$transaction(async tx => {

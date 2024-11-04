@@ -1,5 +1,4 @@
 import express, { NextFunction, Request, Response } from 'express';
-// import { FileUploadHelper } from '../../../helpers/fileUploadHelper';
 import { UserRole } from '@prisma/client';
 import { fileUploader } from '../../../helpers/fileUploadHelper';
 import auth from '../../middlewares/auth';
@@ -12,9 +11,22 @@ router.get(
   auth(UserRole.SUPER_ADMIN, UserRole.ADMIN),
   userController.getAllUsers
 );
+router.get(
+  '/:id',
+  auth(UserRole.SUPER_ADMIN, UserRole.ADMIN),
+  userController.getUserById
+);
+router.put(
+  '/:id',
+  auth(UserRole.SUPER_ADMIN, UserRole.ADMIN),
+  (req: Request, res: Response, next: NextFunction) => {
+    req.body = userValidation.updateUser.parse(req.body.data);
+    return userController.updateAUser(req, res, next);
+  }
+);
 
 router.post(
-  '/create-admin',
+  '/create-user',
   auth(UserRole.SUPER_ADMIN, UserRole.ADMIN),
   fileUploader.upload.single('file'),
   (req: Request, res: Response, next: NextFunction) => {

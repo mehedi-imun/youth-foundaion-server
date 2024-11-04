@@ -59,6 +59,16 @@
             "date": 1730196000127,
             "name": "C:\\web-development\\projects\\youth-foundation-server\\logs\\winston\\successes\\phu-2024-29-10-16-success.log",
             "hash": "1135dfc751f08045a21ad2ca4d33b3da3121c4991fd4779d46a20a205369c999"
+        },
+        {
+            "date": 1730228422274,
+            "name": "C:\\web-development\\projects\\youth-foundation-server\\logs\\winston\\successes\\phu-2024-30-10-01-success.log",
+            "hash": "86f6bcb0a3552aacc32ee36720985d9fb46c8817d8598cfbae223996aeb9e53d"
+        },
+        {
+            "date": 1730747886723,
+            "name": "C:\\web-development\\projects\\youth-foundation-server\\logs\\winston\\successes\\phu-2024-05-11-01-success.log",
+            "hash": "cb2453cc1b4083b66be47badf0de4e4e5688bcf61e87b8b3ab1c68325d450ad3"
         }
     ],
     "hashType": "sha256"
