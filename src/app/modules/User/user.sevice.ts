@@ -9,7 +9,7 @@ import {
 import { paginationHelpers } from '../../../helpers/paginationHelper';
 import { IFile } from '../../../interfaces/file';
 import prisma from '../../../shared/prisma';
-import { userFilterableFields, userSearchAbleFields } from './user.constant';
+import { userSearchAbleFields } from './user.constant';
 
 const createUser = async (req: Request): Promise<User> => {
   const { user, password, action } = req.body;
@@ -61,7 +61,7 @@ interface PaginatedResult<T> {
 }
 const getAllUsers = async (
   params: Record<string, any>,
-  options: Record<string, any>
+  options: Record<string, any>,
 ): Promise<PaginatedResult<User>> => {
   const { page, limit, skip } = paginationHelpers.calculatePagination(options);
   const { searchTerm, roles, ...otherFilters } = params; // Separate roles filter
@@ -70,7 +70,7 @@ const getAllUsers = async (
   // Search term condition
   if (searchTerm) {
     conditions.push({
-      OR: userSearchAbleFields.map((field) => ({
+      OR: userSearchAbleFields.map(field => ({
         [field]: {
           contains: searchTerm,
           mode: 'insensitive',
@@ -78,7 +78,7 @@ const getAllUsers = async (
       })),
     });
   }
-console.log(roles)
+  console.log(roles);
   // Filter by specific roles if provided
   if (roles) {
     conditions.push({
@@ -112,18 +112,19 @@ console.log(roles)
   };
 };
 const getUserById = async (id: string): Promise<User | null> => {
-  return prisma.user.findUnique({ where: { id },
-  include: {
-    userActivity: true,
-    donations: true,
-    bloodDonor: true,
-    FoundationRole: true,
-    loginHistory: true,
-    UserStatusHistory: true,
-    UserActivity: true,
-  }, });
-  
-}
+  return prisma.user.findUnique({
+    where: { id },
+    include: {
+      userActivity: true,
+      donations: true,
+      bloodDonor: true,
+      FoundationRole: true,
+      loginHistory: true,
+      UserStatusHistory: true,
+      UserActivity: true,
+    },
+  });
+};
 // update user
 const updateAUser = async (id: string, data: any): Promise<User | null> => {
   return await prisma.user.update({ where: { id }, data });
@@ -132,5 +133,5 @@ export const userService = {
   createUser,
   getAllUsers,
   getUserById,
-  updateAUser
+  updateAUser,
 };
