@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "/home/mehedi/web-dev/youth-foundation/youth-foundation-server/logs/winston/successes/.72e0f2d0a86cc577e501de79e8ff05f310b86551-audit.json",
+    "files": [
+        {
+            "date": 1736845964608,
+            "name": "/home/mehedi/web-dev/youth-foundation/youth-foundation-server/logs/winston/successes/phu-2025-14-01-15-success.log",
+            "hash": "2220fd5e548ee7fa429ba2d3c242c42d27a4cc42caa0598ec98e7dcc9707c664"
+        }
+    ],
+    "hashType": "sha256"
+}

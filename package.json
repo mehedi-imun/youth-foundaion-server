@@ -4,23 +4,22 @@
   "main": "src/server.ts",
   "license": "MIT",
   "scripts": {
-    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
+    "dev": "ts-node-dev --respawn --transpile-only --poll src/server.ts",
     "prod": "NODE_ENV=production ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "tsc",
     "lint:check": "eslint --ignore-path .eslintignore --ext .js,.ts .",
     "lint:fix": "eslint . --fix",
     "prettier:check": "prettier --ignore-path .gitignore --write \"**/*.+(js|ts|json)\"",
     "prettier:fix": "prettier --write .",
-    "lint-prettier": "yarn lint:check && yarn prettier:check",
+    "lint-prettier": "npm lint:check && npm prettier:check",
     "prepare": "husky install",
-    "husky-prepare-pre-commit": "husky add .husky/pre-commit 'yarn lint-staged'",
+    "husky-prepare-pre-commit": "husky add .husky/pre-commit 'npm lint-staged'",
     "prisma:migrate": "npx prisma migrate dev ",
     "prisma:generate": "npx prisma generate",
     "test": "echo \"Error: no test specified\" && exit 1",
     "seed": "ts-node-dev --respawn --transpile-only prisma/seed.ts"
   },
   "dependencies": {
-    "@prisma/client": "^5.21.1",
     "@prisma/extension-optimize": "^1.0.1",
     "@supercharge/request-ip": "^1.2.0",
     "@types/node": "^20.10.4",
@@ -37,7 +36,6 @@
     "multer": "^1.4.5-lts.1",
     "node-cron": "^3.0.3",
     "nodemailer": "^6.9.7",
-    "prisma": "^5.7.1",
     "sslcommerz-lts": "^1.1.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3",
@@ -47,6 +45,7 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@prisma/client": "^6.2.1",
     "@types/bcrypt": "^5.0.2",
     "@types/cookie-parser": "^1.4.6",
     "@types/cors": "^2.8.17",
@@ -60,8 +59,11 @@
     "@typescript-eslint/parser": "^6.13.2",
     "eslint": "^8.55.0",
     "husky": "^8.0.3",
+    "install": "^0.13.0",
     "lint-staged": "^15.2.0",
+    "npm": "^11.0.0",
     "prettier": "^3.1.1",
+    "prisma": "^6.2.1",
     "ts-node-dev": "^2.0.0"
   }
 }

@@ -197,43 +197,57 @@ CREATE TABLE "DonationFrequency" (
 -- CreateTable
 CREATE TABLE "_UserStatusHistory" (
     "A" TEXT NOT NULL,
-    "B" INTEGER NOT NULL
+    "B" INTEGER NOT NULL,
+
+    CONSTRAINT "_UserStatusHistory_AB_pkey" PRIMARY KEY ("A","B")
 );
 
 -- CreateTable
 CREATE TABLE "_UserActivities" (
     "A" TEXT NOT NULL,
-    "B" INTEGER NOT NULL
+    "B" INTEGER NOT NULL,
+
+    CONSTRAINT "_UserActivities_AB_pkey" PRIMARY KEY ("A","B")
 );
 
 -- CreateTable
 CREATE TABLE "_UserBloodDonor" (
     "A" INTEGER NOT NULL,
-    "B" TEXT NOT NULL
+    "B" TEXT NOT NULL,
+
+    CONSTRAINT "_UserBloodDonor_AB_pkey" PRIMARY KEY ("A","B")
 );
 
 -- CreateTable
 CREATE TABLE "_DonationToDonationType" (
     "A" INTEGER NOT NULL,
-    "B" INTEGER NOT NULL
+    "B" INTEGER NOT NULL,
+
+    CONSTRAINT "_DonationToDonationType_AB_pkey" PRIMARY KEY ("A","B")
 );
 
 -- CreateTable
 CREATE TABLE "_UserDonations" (
     "A" INTEGER NOT NULL,
-    "B" TEXT NOT NULL
+    "B" TEXT NOT NULL,
+
+    CONSTRAINT "_UserDonations_AB_pkey" PRIMARY KEY ("A","B")
 );
 
 -- CreateTable
 CREATE TABLE "_UserFinances" (
     "A" INTEGER NOT NULL,
-    "B" TEXT NOT NULL
+    "B" TEXT NOT NULL,
+
+    CONSTRAINT "_UserFinances_AB_pkey" PRIMARY KEY ("A","B")
 );
 
 -- CreateTable
 CREATE TABLE "_UserLoginHistory" (
     "A" INTEGER NOT NULL,
-    "B" TEXT NOT NULL
+    "B" TEXT NOT NULL,
+
+    CONSTRAINT "_UserLoginHistory_AB_pkey" PRIMARY KEY ("A","B")
 );
 
 -- CreateIndex
@@ -315,43 +329,22 @@ CREATE UNIQUE INDEX "FoundationPosition_name_key" ON "FoundationPosition"("name"
 CREATE UNIQUE INDEX "DonationFrequency_name_key" ON "DonationFrequency"("name");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "_UserStatusHistory_AB_unique" ON "_UserStatusHistory"("A", "B");
-
--- CreateIndex
 CREATE INDEX "_UserStatusHistory_B_index" ON "_UserStatusHistory"("B");
-
--- CreateIndex
-CREATE UNIQUE INDEX "_UserActivities_AB_unique" ON "_UserActivities"("A", "B");
 
 -- CreateIndex
 CREATE INDEX "_UserActivities_B_index" ON "_UserActivities"("B");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "_UserBloodDonor_AB_unique" ON "_UserBloodDonor"("A", "B");
-
--- CreateIndex
 CREATE INDEX "_UserBloodDonor_B_index" ON "_UserBloodDonor"("B");
-
--- CreateIndex
-CREATE UNIQUE INDEX "_DonationToDonationType_AB_unique" ON "_DonationToDonationType"("A", "B");
 
 -- CreateIndex
 CREATE INDEX "_DonationToDonationType_B_index" ON "_DonationToDonationType"("B");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "_UserDonations_AB_unique" ON "_UserDonations"("A", "B");
-
--- CreateIndex
 CREATE INDEX "_UserDonations_B_index" ON "_UserDonations"("B");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "_UserFinances_AB_unique" ON "_UserFinances"("A", "B");
-
--- CreateIndex
 CREATE INDEX "_UserFinances_B_index" ON "_UserFinances"("B");
-
--- CreateIndex
-CREATE UNIQUE INDEX "_UserLoginHistory_AB_unique" ON "_UserLoginHistory"("A", "B");
 
 -- CreateIndex
 CREATE INDEX "_UserLoginHistory_B_index" ON "_UserLoginHistory"("B");

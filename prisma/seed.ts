@@ -7,6 +7,7 @@ const seedSuperAdmin = async () => {
   const hashedPassword = await bcrypt.hash('superadmin', 12);
   const customId = await generateAdminId();
   try {
+    
     // Start a transaction
     const superAdminUser = await prisma.$transaction(async tx => {
       const isExistSuperAdmin = await tx.user.findFirst({
@@ -22,7 +23,7 @@ const seedSuperAdmin = async () => {
       }
 
       // Create the Super Admin user
-      // Generate custom ID
+      // Generate custom d ID
       
       const user = await tx.user.create({
         data: {
